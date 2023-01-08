@@ -20,7 +20,7 @@ import java.io.ObjectOutputStream;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 
-public class TmtChatForm extends JFrame implements ActionListener {
+public class TmtChatFormSub extends JFrame implements ActionListener {
   // 선언부
   //////////////// 통신과 관련한 전역변수 추가 시작//////////////
   // Socket socket = null;
