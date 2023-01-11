@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 public class TmtServerThread extends Thread {
-    TmtChatServer ts = null;
+    TmtChatServer tmtChatServer = null;
     Socket client = null;
     ObjectOutputStream oos = null;
     ObjectInputStream ois = null;
@@ -18,36 +18,37 @@ public class TmtServerThread extends Thread {
 
     }
 
-    public TmtServerThread(TmtChatServer ts) {
-        this.ts = ts;
-        this.client = ts.socket; // tmt서버 소켓
+    public TmtServerThread(TmtChatServer tmtChatServer) {
+        this.tmtChatServer = tmtChatServer;
+        this.client = tmtChatServer.client; // tmt서버 소켓
         try {
             oos = new ObjectOutputStream(client.getOutputStream());// 말하기
             ois = new ObjectInputStream(client.getInputStream());// 듣기
             String msg = (String) ois.readObject();
-            ts.jta_log.append(msg + "\n");
+            tmtChatServer.jta_log.append(msg + "\n");
             StringTokenizer st = new StringTokenizer(msg, "#");
             st.nextToken();// 100 skip처리
             talkName = st.nextToken();// 닉네임 저장
-            ts.jta_log.append(talkName + "님이 입장하였습니다.\n");
-            for (TmtServerThread tst : ts.globalList) {
-                ts.jta_log.append("tst.nickName ==> " + tst.talkName + "this: " + this + ", tst : " + tst);
-                String currentName = tst.talkName;
-                this.send(Protocol.TALK_IN + Protocol.separator + tst.talkName);
+            tmtChatServer.jta_log.append(talkName + "님이 입장하였습니다.\n");
+            for (TmtServerThread tmtServerThread : tmtChatServer.globalList) {
+                tmtChatServer.jta_log.append("tst.nickName ==> " + tmtServerThread.talkName + "this: " + this
+                        + ", tst : " + tmtServerThread);
+                String currentName = tmtServerThread.talkName;
+                this.send(Protocol.TALK_IN + Protocol.separator + tmtServerThread.talkName);
             }
             // 현재 서버에 입장한 클라이언트 스레드 추가하기
-            ts.globalList.add(this);
+            tmtChatServer.globalList.add(this);
             this.broadCasting(msg);
         } catch (Exception e) {
-            ts.jta_log.append("Exception : " + e.toString() + "\n");
+            tmtChatServer.jta_log.append("Exception : " + e.toString() + "\n");
         }
     }
 
     // 현재 입장해 있는 친구들 모두에게 메시지 전송하기
     public void broadCasting(String msg) {
         synchronized (this) {
-            for (TmtServerThread tst : ts.globalList) {
-                tst.send(msg);
+            for (TmtServerThread tmtServerThread : tmtChatServer.globalList) {
+                tmtServerThread.send(msg);
             }
         }
     }
@@ -68,8 +69,8 @@ public class TmtServerThread extends Thread {
         try {
             run_start: while (!isStop) {
                 msg = (String) ois.readObject();
-                ts.jta_log.append(msg + "\n");
-                ts.jta_log.setCaretPosition(ts.jta_log.getDocument().getLength());
+                tmtChatServer.jta_log.append(msg + "\n");
+                tmtChatServer.jta_log.setCaretPosition(tmtChatServer.jta_log.getDocument().getLength());
                 StringTokenizer st = null;
                 int protocol = 0;// 100|200|201|202|500
                 if (msg != null) {
@@ -87,7 +88,7 @@ public class TmtServerThread extends Thread {
                         String otherName = st.nextToken();
                         // 귓속말로 보내진 메시지
                         String msg1 = st.nextToken();
-                        for (TmtServerThread cst : ts.globalList) {
+                        for (TmtServerThread cst : tmtChatServer.globalList) {
                             if (otherName.equals(cst.talkName)) {// 상대에게 보내기
                                 cst.send(Protocol.WHISPER + Protocol.separator + talkName + Protocol.separator
                                         + otherName
@@ -113,7 +114,7 @@ public class TmtServerThread extends Thread {
                     case Protocol.TALK_OUT: {
                         String talkName = st.nextToken();
                         // 메시지를 전송한 스레드를 chatList에서 제거 한다.
-                        ts.globalList.remove(this);
+                        tmtChatServer.globalList.remove(this);
                         // broadCasting(Protocol.TALK_OUT + Protocol.separator + talkName);
                         String message = Protocol.TALK_OUT + Protocol.separator + talkName;
                         this.broadCasting(message);
