@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import javax.swing.JOptionPane;
+
 public class TmtServerThread extends Thread {
     TmtChatServer tmtChatServer = null;
     Socket client = null;
@@ -34,7 +36,8 @@ public class TmtServerThread extends Thread {
                 tmtChatServer.jta_log.append("tst.nickName ==> " + tmtServerThread.talkName + "this: " + this
                         + ", tst : " + tmtServerThread);
                 String currentName = tmtServerThread.talkName;
-                this.send(Protocol.TALK_IN + Protocol.separator + tmtServerThread.talkName);
+                // this.send(Protocol.TALK_IN + Protocol.separator + tmtServerThread.talkName);
+                this.send(Protocol.TALK_IN + Protocol.separator + currentName);
             }
             // 현재 서버에 입장한 클라이언트 스레드 추가하기
             tmtChatServer.globalList.add(this);
@@ -73,14 +76,19 @@ public class TmtServerThread extends Thread {
                 tmtChatServer.jta_log.setCaretPosition(tmtChatServer.jta_log.getDocument().getLength());
                 StringTokenizer st = null;
                 int protocol = 0;// 100|200|201|202|500
+                System.out.println(msg);
+                // JOptionPane.showMessageDialog(tmtChatServer, msg);
                 if (msg != null) {
                     st = new StringTokenizer(msg, "#");
                     protocol = Integer.parseInt(st.nextToken());// 100
                 }
+                // JOptionPane.showMessageDialog(tmtChatServer, protocol);
                 switch (protocol) {
                     case Protocol.MESSAGE: {
+                        // JOptionPane.showMessageDialog(tmtChatServer, "200");
                         String talkName = st.nextToken();
                         String message = st.nextToken();
+                        broadCasting(Protocol.MESSAGE + Protocol.separator + talkName + Protocol.separator + message);
                     }
                         break;
                     case Protocol.WHISPER: {
