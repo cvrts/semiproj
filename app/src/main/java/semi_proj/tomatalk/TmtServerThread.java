@@ -1,75 +1,127 @@
 package semi_proj.tomatalk;
-// 서버에서 각 클라이언트의 요청을 처리할 스레드
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.StringTokenizer;
 
-import javax.print.event.PrintEvent;
+public class TmtServerThread extends Thread {
+    TmtChatServer ts = null;
+    Socket client = null;
+    ObjectOutputStream oos = null;
+    ObjectInputStream ois = null;
+    // 현재 서버에 입장한 클라이언트 스레드의 닉네임 저장
+    String talkName = null;
 
-public class TmtServerThread extends Thread{
-//클라이언트 소켓 저장
-Socket socket;
+    // 생성자
+    public TmtServerThread() {
 
-TmtChatServer tmtChatServer;
-//입출력
-BufferedReader br;
-PrintWriter pw;
-//전달 할 문자열
-String str;
-
-//대화명(ID)
-String name;
-
-
-public TmtServerThread(TmtChatServer tmtChatServer, Socket socket){
-    /* tmtChatServer = new TmtChatServer 사용 불가함
-     * 서버가 두번 가동되기 때문에 충돌이 일어난다. 
-     * 따라서 매개변수를 이용해서 객체를 얻어야 한다.
-     */
-this.tmtChatServer=tmtChatServer;
-//접속한 클라이언트의 정보를 저장한다.
-this.socket=socket;
-//데이터 전송을 위한 입출력스트림
-try {
-    //입력
-    //socket.getInputStream() =>접속 클라이언트의 InputStream 얻어옴
-    br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    //출력
-    pw= new PrintWriter(socket.getOutputStream(),true);
-} catch (Exception e) {
-   System.out.println("에러발생>>>"+e);
     }
-}
 
-    public void send(String str) {
-        pw.println(str);//문자열 출력
-        pw.flush();//버퍼에 남아있는 것을 비워냄
-    }
-@Override
-    public void run(){
+    public TmtServerThread(TmtChatServer ts) {
+        this.ts = ts;
+        this.client = ts.socket; // tmt서버 소켓
         try {
-            //대화명 입력받기
-            pw.println("대화명을 입력하세요");
-            name = br.readLine();
-
-            //서버에서 각 클라이언트에 대화명 출력
-            tmtChatServer.broadCast("["+name+"]"+"님이 입장했습니다.");
-            
-            //무한 대기하며 입력한 메세지를 각 클라이언트에 계속 전달한다.
-            while((str = br.readLine())!= null){
-                tmtChatServer.broadCast("["+name+"]"+str);
+            oos = new ObjectOutputStream(client.getOutputStream());// 말하기
+            ois = new ObjectInputStream(client.getInputStream());// 듣기
+            String msg = (String) ois.readObject();
+            ts.jta_log.append(msg + "\n");
+            StringTokenizer st = new StringTokenizer(msg, "#");
+            st.nextToken();// 100 skip처리
+            talkName = st.nextToken();// 닉네임 저장
+            ts.jta_log.append(talkName + "님이 입장하였습니다.\n");
+            for (TmtServerThread tst : ts.globalList) {
+                ts.jta_log.append("tst.nickName ==> " + tst.talkName + "this: " + this + ", tst : " + tst);
+                String currentName = tst.talkName;
+                this.send(Protocol.TALK_IN + Protocol.separator + tst.talkName);
             }
+            // 현재 서버에 입장한 클라이언트 스레드 추가하기
+            ts.globalList.add(this);
+            this.broadCasting(msg);
         } catch (Exception e) {
-            tmtChatServer.removeThread(this);
-            tmtChatServer.broadCast("["+name+"]"+"님이 퇴장했습니다.");
-            // 콘솔에 퇴장 클라이언트의 IP 주소 출력
-            System.out.println(socket.getInetAddress()+"의 연결이 종료됨");
+            ts.jta_log.append("Exception : " + e.toString() + "\n");
         }
     }
 
-    public void strat() {
+    // 현재 입장해 있는 친구들 모두에게 메시지 전송하기
+    public void broadCasting(String msg) {
+        synchronized (this) {
+            for (TmtServerThread tst : ts.globalList) {
+                tst.send(msg);
+            }
+        }
     }
 
+    // 클라이언트에게 말하기
+    public void send(String msg) {
+        try {
+            oos.writeObject(msg);
+        } catch (Exception e) {
+            e.printStackTrace();// stack에 쌓여 있는 에러메시지 이력 출력
+        }
+    }
+
+    @Override
+    public void run() {
+        String msg = null;
+        boolean isStop = false;
+        try {
+            run_start: while (!isStop) {
+                msg = (String) ois.readObject();
+                ts.jta_log.append(msg + "\n");
+                ts.jta_log.setCaretPosition(ts.jta_log.getDocument().getLength());
+                StringTokenizer st = null;
+                int protocol = 0;// 100|200|201|202|500
+                if (msg != null) {
+                    st = new StringTokenizer(msg, "#");
+                    protocol = Integer.parseInt(st.nextToken());// 100
+                }
+                switch (protocol) {
+                    case Protocol.MESSAGE: {
+                        String talkName = st.nextToken();
+                        String message = st.nextToken();
+                    }
+                        break;
+                    case Protocol.WHISPER: {
+                        String talkName = st.nextToken();
+                        String otherName = st.nextToken();
+                        // 귓속말로 보내진 메시지
+                        String msg1 = st.nextToken();
+                        for (TmtServerThread cst : ts.globalList) {
+                            if (otherName.equals(cst.talkName)) {// 상대에게 보내기
+                                cst.send(Protocol.WHISPER + Protocol.separator + talkName + Protocol.separator
+                                        + otherName
+                                        + Protocol.separator + msg1);
+                                break;
+                            }
+                        } // end of for
+                          // 내가 한 말을 내게 보냄
+                        this.send(Protocol.WHISPER + Protocol.separator + talkName + Protocol.separator + otherName
+                                + Protocol.separator + msg1);
+                    }
+                        break;
+                    case Protocol.CHANGE: {
+                        String talkName = st.nextToken();
+                        String afterName = st.nextToken();
+                        String msg1 = st.nextToken();
+                        this.talkName = afterName;// 초기화
+                        broadCasting(Protocol.CHANGE + Protocol.separator + talkName + Protocol.separator + afterName
+                                + Protocol.separator + msg1);
+                    }
+                        break;
+                    // 종료하기 구현
+                    case Protocol.TALK_OUT: {
+                        String talkName = st.nextToken();
+                        // 메시지를 전송한 스레드를 chatList에서 제거 한다.
+                        ts.globalList.remove(this);
+                        // broadCasting(Protocol.TALK_OUT + Protocol.separator + talkName);
+                        String message = Protocol.TALK_OUT + Protocol.separator + talkName;
+                        this.broadCasting(message);
+                    }
+                        break run_start;
+                }///////////// end of switch
+            } ///////////////// end of while
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
 }

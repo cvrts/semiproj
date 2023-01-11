@@ -88,7 +88,7 @@ while(!isStop){
   jta_log.append("서버에 접속한 클라이언트>>>"+socket);//서버에 접속한 클라이언트 jta_log에 붙이기
   jta_log.append("서버에 접속한 클라이언트 >>>"+ socket.getInetAddress()+"\n");//서버에 접속한 클라이언트 주소
 System.out.println("서버에 접속한 클라이언트>>>"+socket);
-tmtServerThread = new TmtServerThread(this,socket);////////?//////////접속클라이언트와 서버로 st객체 생성
+tmtServerThread = new TmtServerThread(this.socket);////////?//////////접속클라이언트와 서버로 st객체 생성
 //Thread 가동 ->run()-> broadCast()-> send()실시간 메소드 호출
 tmtServerThread.strat();
   }
