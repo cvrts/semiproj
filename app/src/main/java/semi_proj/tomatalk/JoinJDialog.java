@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TestJDialog extends JDialog implements ActionListener {
+public class JoinJDialog extends JDialog implements ActionListener {
   // 각 컴포넌트의 크기 및 위치 선정해야함
 
   LoginForm00 lgf = null;
@@ -22,17 +22,22 @@ public class TestJDialog extends JDialog implements ActionListener {
   JLabel jl_pw = new JLabel("비밀번호 :");
   JTextArea jta_pw = new JTextArea();
   JTextField jtf_pw = new JTextField();
+  JLabel jl_nickName = new JLabel("닉네임");
+  JTextArea jta_nickName = new JTextArea();
+  JTextField jtf_nickName = new JTextField();
   JButton jbtn_join = new JButton("가입하기"); // 가입하기 누르면 로그인 폼으로 이동구현하기
   boolean isClicked = false; // 로그인 폼에서 클릭하면 회원가입창이 뜰 수 있게 해주는 트리거
-  // 생성자
+  MemberVO memVO = new MemberVO();
+  ChatDao dao = new ChatDao();
 
-  public TestJDialog() {
+  // 생성자
+  public JoinJDialog() {
     // this.lgf =
     System.out.println("다이얼로그 생성자 호출");
     initDisplay();
   }
 
-  public TestJDialog(LoginForm00 log) {
+  public JoinJDialog(LoginForm00 log) {
     System.out.println("다이얼로그 생성자 호출");
     this.lgf = log;
     // initDisplay();
@@ -50,16 +55,20 @@ public class TestJDialog extends JDialog implements ActionListener {
     jl_id.setBounds(20, 20, 100, 20);
     jtf_id.setBounds(120, 20, 100, 20);
     jl_pw.setBounds(20, 45, 100, 20);
-    jtf_pw.setBounds(120, 45, 150, 20);
-    jbtn_join.setBounds(220, 20, 120, 20);
+    jtf_pw.setBounds(120, 45, 100, 20);
+    jl_nickName.setBounds(20, 70, 100, 20);
+    jtf_nickName.setBounds(120, 70, 100, 20);
+    jbtn_join.setBounds(120, 100, 100, 20);
     jbtn_join.addActionListener(lgf);
     jp.add(jl_id);
     jp.add(jtf_id);
     jp.add(jl_pw);
     jp.add(jtf_pw);
+    jp.add(jl_nickName);
+    jp.add(jtf_nickName);
     jp.add(jbtn_join);
     this.setTitle("회원가입");
-    this.setSize(400, 600);
+    this.setSize(300, 400);
     this.setContentPane(jp);
     this.setVisible(isClicked);
   }
@@ -70,9 +79,14 @@ public class TestJDialog extends JDialog implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    Object obj = new Object();
-    if(obj == jbtn_join){
-      JOptionPane.showConfirmDialog(this, e, getTitle(), ABORT)
-    }    
+    Object obj = e.getSource();
+    if (obj == jbtn_join) {
+      memVO.setId(jtf_id.getText());
+      memVO.setPw(jtf_pw.getText());
+      memVO.setName(jtf_nickName.getText());
+      System.out.println(memVO.getId() + " " + memVO.getName() + " " + memVO.getPw());
+      dao.insertData(memVO);
+      // JOptionPane.showConfirmDialog(this, e, getTitle(), ABORT);
+    }
   }
 }

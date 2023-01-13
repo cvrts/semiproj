@@ -13,6 +13,18 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class LoginForm00 extends JFrame implements ActionListener {
 	// 선언부
 	String imgPath = "E:\\vscode_java\\dev_java\\app\\src\\main\\java\\dev_java\\images\\login\\";
@@ -26,8 +38,8 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	JButton jbtn_login = new JButton("로그인");
 	// JButton jbtn_join = new JButton(new ImageIcon(imgPath+"confirm.png"));
 	JButton jbtn_join = new JButton("가입하기");
-	TestJDialog tjd = new TestJDialog(this);
-
+	JoinJDialog tjd = new JoinJDialog(this);
+	ChatDao cd = new ChatDao();
 	// 생성자
 	LoginForm00() {
 		// initDisplay();
@@ -44,6 +56,7 @@ public class LoginForm00 extends JFrame implements ActionListener {
 		// 화면
 
 	public void initDisplay() {
+		jbtn_login.addActionListener(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setContentPane(new MyPanel());
 		this.setLayout(null);
@@ -73,17 +86,21 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	public static void main(String[] args) {
 		LoginForm00 loginForm = new LoginForm00();
 		loginForm.initDisplay();
-		TestJDialog testDialog = new TestJDialog();
+		JoinJDialog testDialog = new JoinJDialog();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
 		if (obj == jbtn_join) {
-			System.out.println("액션퍼폼드");
+			// System.out.println("액션퍼폼드");
 			tjd.isClicked = true;
 			// tjd.TestJDialog();
 			tjd.initDisplay();
 		}
+		else if(obj == jbtn_login){
+
+		}
 	}
+
 }
