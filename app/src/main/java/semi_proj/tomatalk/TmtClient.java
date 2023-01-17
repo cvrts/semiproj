@@ -26,6 +26,7 @@ public class TmtClient extends JFrame implements ActionListener {
   ObjectOutputStream oos = null;// 말 하고 싶을 때
   ObjectInputStream ois = null;// 듣기 할 때
   String nickName = null;// 닉네임 등록
+  String otherName = null;// 닉네임 등록
   //////////////// 통신과 관련한 전역변수 추가 끝 //////////////
   JPanel jp_second = new JPanel();
   JPanel jp_second_south = new JPanel();
@@ -87,7 +88,7 @@ public class TmtClient extends JFrame implements ActionListener {
       // 상대를 선택
       int row = jtb.getSelectedRow();
       if (row == -1) {// -1=> end of file
-        JOptionPane.showMessageDialog(this, "귓속말 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "1대1 대화 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
         return;
       } else {
         String name = (String) dtm.getValueAt(row, 0);
@@ -95,8 +96,9 @@ public class TmtClient extends JFrame implements ActionListener {
           JOptionPane.showMessageDialog(this, "다른 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
           return;
         }
-        // 귓속말 입력받기
-        String msg1 = JOptionPane.showInputDialog(name + "님에게 보낼 메시지를 입력");
+        String msg1 = JOptionPane.showInputDialog(name + "님과 대화를 시작하시겠습니까?");
+        TmtChatForm tcf = new TmtChatForm();
+        tcf.initDisplay();
         try {
           oos.writeObject(
               Protocol.WHISPER + Protocol.separator + nickName + Protocol.separator + name + Protocol.separator + msg1);
@@ -143,6 +145,7 @@ public class TmtClient extends JFrame implements ActionListener {
   // 화면그리기
   public void initDisplay() {
     jtf_msg.addActionListener(this);
+    jbtn_one.addActionListener(this);
     jbtn_send.addActionListener(this);
     // 사용자의 닉네임 받기
     nickName = JOptionPane.showInputDialog("닉네임을 입력하세요.");

@@ -6,6 +6,11 @@ import java.util.Vector;
 public class TmtClientThread extends Thread {
   TmtClient tc = null;
   TmtServerThread tst = null;
+  TmtChatForm tmtChatForm = null;
+
+  public TmtClientThread(TmtChatForm tmtChatForm) {
+    this.tmtChatForm = tmtChatForm;
+  }
 
   public TmtClientThread(TmtClient tc) {
     this.tc = tc;
@@ -49,6 +54,46 @@ public class TmtClientThread extends Thread {
                                                                                        // 스크롤해줌
             System.out.println("프로토콜200 / MESSAGE");
           }
+          case Protocol.PROOM_IN: { // //1:1채팅창에 들어감
+            String nickName = st.nextToken();//tomato
+            String otherName = st.nextToken();//kiwi
+            String message = st.nextToken();//1:1
+            //1:1채팅창을 열어줌
+            TmtChatForm tcf = new TmtChatForm(tc);
+            tcf.initDisplay();
+            //DefaultTableModel - 2명
+            tc.jta_display.append(nickName + "님과 " + otherName + "님이 대화를 시작했습니다. " + "\n");
+            System.out.println("프로토콜210 / PROOM_IN");
+            
+            //tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
+            //tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+          }
+            break;
+          case Protocol.PROOM_MSG: { // //1:1채팅
+            String nickName = st.nextToken();//tomato
+           // String otherName = st.nextToken();//kiwi
+            String message = st.nextToken();//1:1
+            //1:1채팅창을 열어줌
+            TmtChatForm tcf = new TmtChatForm(tc);
+            tcf.initDisplay();
+            //DefaultTableModel - 2명
+            tc.jta_display.append("[" + nickName + "] " + message + "\n");
+            tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+            System.out.println("프로토콜220 / PROOM_MSG");
+            
+            //tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
+            //tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+
+          }
+            break;
+          case Protocol.WHISPER: {
+            String nickName = st.nextToken();
+            String otherName = st.nextToken();
+            String message = st.nextToken();
+            tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
+            tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+          }
+            break;
           default:
             System.out.println("해당하는 프로토콜이 존재하지 않습니다.");
         }

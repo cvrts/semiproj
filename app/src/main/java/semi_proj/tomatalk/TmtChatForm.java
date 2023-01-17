@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,10 +17,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 
 public class TmtChatForm extends JFrame implements ActionListener, FocusListener {
 
+  Socket chatFormClient = null; // 1대1채팅 소켓
+  ObjectOutputStream oos2 = null;// 말 하고 싶을 때
+  ObjectInputStream ois2 = null;// 듣기 할 때
+  String nickName = null;// 닉네임 등록
   // 선언부
   String imgPath = "D:\\semi\\app\\src\\main\\java\\semi_proj\\images\\토마토채팅방배경.png";
   JPanel jp = new JPanel();
@@ -35,16 +41,21 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
   JScrollPane jsp_display = new JScrollPane(jta_display, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
       JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
   FriendList friendList = new FriendList(this);
+  TmtClient tc = null;
+
+  public TmtChatForm(TmtClient tc) {
+    this();
+    this.tc = tc;
+    }
 
   // 생성자
-  public void TmtChatForm() {
-
+  public TmtChatForm() {
+    initDisplay();
   }
-
   // 메인
   public static void main(String[] args) {
-    TmtChatForm tmtChatForm = new TmtChatForm();
-    tmtChatForm.initDisplay();
+    //TmtChatForm tmtChatForm = new TmtChatForm();
+    //tmtChatForm.initDisplay();
   }
 
   // 화면그리기
@@ -69,7 +80,7 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
     jp_south_second.add(jbtn_friendlist);
     jp_south_second.add(jbtn_exit);
     // jp_imgPanel.add(imdPath)=========================================
-    jta_display.setBackground(Color.orange);// 대화창 배경색 변경
+    jta_display.setBackground(Color.WHITE);// 대화창 배경색 변경
     jta_display.setForeground(Color.black);// 대화창 글자색 변경
     jta_display.setLineWrap(true);// 자동줄바꾸기
     jta_display.setEnabled(false);// JTextArea 입력불가하게 만들기
@@ -80,27 +91,33 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
     this.setVisible(true);
     this.setTitle("tomatalk_chat_form");
     this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    jbtn_exit.requestFocus(true);//actionPerformed이벤트 걸리지 않은곳에 포커스를 맞춰줌
+    jbtn_exit.requestFocus(true);// actionPerformed이벤트 걸리지 않은곳에 포커스를 맞춰줌
   }
-  //채팅방배경이미지 넣기
+  // 채팅방배경이미지 넣기
   // JViewport viewport = new JViewport() {
-  //   public void paintComponent(Graphics g) {
-  //   Image img = imgPath.getImage();
-  //   setOpaque(false);
-  //   Graphics2D gd = (Graphics2D) g;
-  //   gd.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-  //   g.drawImage(imgPath, 0, 0, this);//
-  //   super.paintComponent(g);// 패널에 그려진 장상을 지우기 위해 호출
-  //   }
-  //   };
+  // public void paintComponent(Graphics g) {
+  // Image img = imgPath.getImage();
+  // setOpaque(false);
+  // Graphics2D gd = (Graphics2D) g;
+  // gd.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+  // g.drawImage(imgPath, 0, 0, this);//
+  // super.paintComponent(g);// 패널에 그려진 장상을 지우기 위해 호출
+  // }
+  // };
 
   @Override
   public void actionPerformed(ActionEvent e) {
     Object obj = e.getSource();
     if (jtf_msg_guide == obj || jbtn_send == obj) {
-      String msg = jtf_msg_guide.getText();
-      jta_display.append(msg + "\n");
+      String msg1 = jtf_msg_guide.getText();
+      //jta_display.append(msg + "\n");
       jtf_msg_guide.setText("");
+      try {
+        tc.oos.writeObject(Protocol.PROOM_IN+Protocol.separator+tc.nickName+Protocol.separator+tc.otherName+Protocol.separator+msg1);
+       // tc.oos.writeObject(Protocol.PROOM_MSG+Protocol.separator+tc.nickName+Protocol.separator+tc.otherName+Protocol.separator+msg1);
+      } catch (Exception e2) {
+        e2.printStackTrace();
+      }
     } else if (jbtn_exit == obj) {// 나가기 버튼 누르면 1:1 채팅창 닫힘
       this.dispose();// JFrame을 상속받았기 때문에 버튼에 거는게 아니라 this를 써야 한다
       // jbtn_exit.dispose();===> 이렇게 하면 오류남 버튼에 걸려있으니까!

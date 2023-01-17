@@ -34,8 +34,10 @@ public class TmtServerThread extends Thread {
                 tmtChatServer.jta_log.append("tst.nickName ==> " + tmtServerThread.talkName + "this: " + this
                         + ", tst : " + tmtServerThread);
                 String currentName = tmtServerThread.talkName;
-                this.send(Protocol.TALK_IN + Protocol.separator + tmtServerThread.talkName);
+                // this.send(Protocol.TALK_IN + Protocol.separator + tmtServerThread.talkName);
+                this.send(Protocol.TALK_IN + Protocol.separator + currentName);
             }
+
             // 현재 서버에 입장한 클라이언트 스레드 추가하기
             tmtChatServer.globalList.add(this);
             this.broadCasting(msg);
@@ -73,34 +75,81 @@ public class TmtServerThread extends Thread {
                 tmtChatServer.jta_log.setCaretPosition(tmtChatServer.jta_log.getDocument().getLength());
                 StringTokenizer st = null;
                 int protocol = 0;// 100|200|201|202|500
+                System.out.println(msg);
+                // JOptionPane.showMessageDialog(tmtChatServer, msg);
                 if (msg != null) {
                     st = new StringTokenizer(msg, "#");
                     protocol = Integer.parseInt(st.nextToken());// 100
                 }
+                // JOptionPane.showMessageDialog(tmtChatServer, protocol);
                 switch (protocol) {
                     case Protocol.MESSAGE: {
+                        // JOptionPane.showMessageDialog(tmtChatServer, "200");
                         String talkName = st.nextToken();
                         String message = st.nextToken();
+                        broadCasting(Protocol.MESSAGE + Protocol.separator + talkName + Protocol.separator + message);
                     }
                         break;
-                    case Protocol.WHISPER: {
-                        String talkName = st.nextToken();
-                        String otherName = st.nextToken();
+                    case Protocol.PROOM_IN: {
+                        String talkName = st.nextToken();// tomato
+                        String otherName = st.nextToken();// kiwi
+                        String menu = st.nextToken();// 1대1 -> 프로토콜 210|tomato|kiwi|1대1
                         // 귓속말로 보내진 메시지
                         String msg1 = st.nextToken();
                         for (TmtServerThread cst : tmtChatServer.globalList) {
                             if (otherName.equals(cst.talkName)) {// 상대에게 보내기
-                                cst.send(Protocol.WHISPER + Protocol.separator + talkName + Protocol.separator
+                                cst.send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator
                                         + otherName
-                                        + Protocol.separator + msg1);
+                                        + Protocol.separator + menu);
                                 break;
                             }
                         } // end of for
                           // 내가 한 말을 내게 보냄
-                        this.send(Protocol.WHISPER + Protocol.separator + talkName + Protocol.separator + otherName
+                        this.send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator + otherName
                                 + Protocol.separator + msg1);
                     }
                         break;
+                    case Protocol.PROOM_MSG: {
+                        String talkName = st.nextToken();// tomato
+                        String otherName = st.nextToken();// kiwi
+                        // 1:1대화로 보내진 메시지 - TmtChatForm의 actionPerformed에서 날아온 메세지
+                        String msg2 = st.nextToken();
+                        for (TmtServerThread cst : tmtChatServer.globalList) {
+                            if (otherName.equals(cst.talkName)) {// 상대에게 보내기
+                                cst.send(Protocol.PROOM_MSG + Protocol.separator + talkName + Protocol.separator
+                                        + otherName
+                                        + Protocol.separator + msg2);
+                                break;
+                            }
+                        } // end of for
+                          // 내가 한 말을 내게 보냄
+                        this.send(Protocol.PROOM_MSG + Protocol.separator + talkName + Protocol.separator + otherName
+                                + Protocol.separator + msg2);
+                    }
+                        break;
+
+                    /*
+                     * case Protocol.WHISPER: {
+                     * String talkName = st.nextToken();
+                     * String otherName = st.nextToken();
+                     * // 귓속말로 보내진 메시지
+                     * String msg1 = st.nextToken();
+                     * for (TmtServerThread cst : tmtChatServer.globalList) {
+                     * if (otherName.equals(cst.talkName)) {// 상대에게 보내기
+                     * cst.send(Protocol.WHISPER + Protocol.separator + talkName +
+                     * Protocol.separator
+                     * + otherName
+                     * + Protocol.separator + msg1);
+                     * break;
+                     * }
+                     * } // end of for
+                     * // 내가 한 말을 내게 보냄
+                     * this.send(Protocol.WHISPER + Protocol.separator + talkName +
+                     * Protocol.separator + otherName
+                     * + Protocol.separator + msg1);
+                     * }
+                     * break;
+                     */
                     case Protocol.CHANGE: {
                         String talkName = st.nextToken();
                         String afterName = st.nextToken();
@@ -123,7 +172,7 @@ public class TmtServerThread extends Thread {
                 }///////////// end of switch
             } ///////////////// end of while
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
         }
     }
 }
