@@ -7,19 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -33,16 +20,17 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	JTextField jtf_id = new JTextField();
 	JLabel jlb_pw = new JLabel("비밀번호");
 	JPasswordField jpf_pw = new JPasswordField();
-	Font font = new Font("궁서체", Font.BOLD, 10);
+	Font font = new Font("돋움체", Font.BOLD, 10);
 	// JButton jbtn_login = new JButton(new ImageIcon(imgPath+"login.png"));
-	JButton jbtn_login = new JButton("로그인");
+	JButton jbtn_login = new JButton("LOGIN");
 	// JButton jbtn_join = new JButton(new ImageIcon(imgPath+"confirm.png"));
-	JButton jbtn_join = new JButton("가입하기");
-	JoinJDialog tjd = new JoinJDialog(this);
-	ChatDao cd = new ChatDao();
+	JButton jbtn_join = new JButton("JOIN US");
+	JoinJDialog joindia = new JoinJDialog(this);
+	ChatDao cDao = null;
+	String nickname = null;
+
 	// 생성자
 	LoginForm00() {
-		// initDisplay();
 	}
 
 	// 내부클래스로 배경 이미지 처리
@@ -53,10 +41,9 @@ public class LoginForm00 extends JFrame implements ActionListener {
 			super.paintComponent(g);
 		}
 	}// end of MyPanel - 사용자 패널정의 - LoginForm$1.class, LoginForm$MyPanel.class
-		// 화면
+		// 화면그리기
 
 	public void initDisplay() {
-		jbtn_login.addActionListener(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setContentPane(new MyPanel());
 		this.setLayout(null);
@@ -86,21 +73,23 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	public static void main(String[] args) {
 		LoginForm00 loginForm = new LoginForm00();
 		loginForm.initDisplay();
-		JoinJDialog testDialog = new JoinJDialog();
+		JoinJDialog joinDialog = new JoinJDialog();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
-		if (obj == jbtn_join) {
+		if (obj == jbtn_join) { // 가입버튼 눌렀니?
 			// System.out.println("액션퍼폼드");
-			tjd.isClicked = true;
-			// tjd.TestJDialog();
-			tjd.initDisplay();
+			joindia.isClicked = true; // 버튼을 누르면 JoinDialog가 열림
+			joindia.initDisplay();
+		} else if (obj == jbtn_login) {
+			cDao = new ChatDao();
+			String user_id = jtf_id.getText();
+			String user_pw = jpf_pw.getText();
+			nickname = cDao.login(user_id, user_pw);
+			TmtClient tClient = new TmtClient(this);
 		}
-		else if(obj == jbtn_login){
-
-		}
-	}
-
+		System.out.println("현재 적용된 닉네임" + nickname);
+	}// end of actionPerformed
 }

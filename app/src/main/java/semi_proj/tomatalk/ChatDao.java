@@ -3,6 +3,8 @@ package semi_proj.tomatalk;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import semi_proj.oracle.DBConnectionMgr;
@@ -45,9 +47,8 @@ public class ChatDao {
       dMgr.freeConnection(con, pstmt);
     }
     return result;
-
   }
-
+	//로그인
   public String login(String mem_id, String mem_pw) {
     String a_name = null;
     StringBuilder sql = new StringBuilder();
@@ -71,5 +72,52 @@ public class ChatDao {
       e.printStackTrace();
     }
     return a_name; // db오류
+  }
+	//저장된 멤버리스트
+ public List<MemberVO> listMembers(){
+    List<MemberVO> memberlist = new ArrayList<MemberVO>();
+    try {
+      con = dMgr.getConnection();
+      String query = "select * from member ";
+      System.out.println(query);
+      pstmt = con.prepareStatement(query);
+      ResultSet rs = pstmt.executeQuery();
+      while(rs.next()){
+        String mem_id = rs.getString("mem_id");
+        String mem_pw = rs.getString("mem_pw");
+        String mem_name = rs.getString("mem_name");
+        //Date joinDate = rs.getDate("insert");
+
+        MemberVO vo = new MemberVO();
+        vo.setId(mem_id);
+        vo.setPw(mem_pw);
+        vo.setName(mem_name);
+        memberlist.add(vo);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }finally {
+      dMgr.freeConnection(con, pstmt, rs);
+    }
+    return memberlist;
+  } 
+  //id 중복
+  public int idCheck(String mem_id){
+    int value = 0;
+    try {
+      String sql = "select mem_id from member where mem_id = ? ";
+      con = dMgr.getConnection();
+      pstmt = con.prepareStatement(sql.toString());
+      pstmt.setString(1, mem_id);
+      rs = pstmt.executeQuery();
+      if(rs.next()){ 
+        value = 1;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }finally{
+      dMgr.freeConnection(con, pstmt, rs);
+    }
+    return value;
   }
 }

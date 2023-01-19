@@ -90,7 +90,7 @@ public class TmtServerThread extends Thread {
                         broadCasting(Protocol.MESSAGE + Protocol.separator + talkName + Protocol.separator + message);
                     }
                         break;
-                    case Protocol.PROOM_IN: {
+                    case Protocol.PROOM_IN: { //입장한 사실을 알림
                         String talkName = st.nextToken();// tomato
                         String otherName = st.nextToken();// kiwi
                         String menu = st.nextToken();// 1대1 -> 프로토콜 210|tomato|kiwi|1대1
@@ -109,7 +109,7 @@ public class TmtServerThread extends Thread {
                                 + Protocol.separator + msg1);
                     }
                         break;
-                    case Protocol.PROOM_MSG: {
+                    case Protocol.PROOM_MSG: { // 1:1대화
                         String talkName = st.nextToken();// tomato
                         String otherName = st.nextToken();// kiwi
                         // 1:1대화로 보내진 메시지 - TmtChatForm의 actionPerformed에서 날아온 메세지
