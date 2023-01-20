@@ -73,6 +73,56 @@ public class ChatDao {
     }
     return a_name; // db오류
   }
+  
+  //닉네임 변경 /////////////////////////////////////////////////////////////////상준 변경내역
+  public int nameCheck(String mem_name){ //닉네임 중복 확인하는 메소드
+      int value = 0; //
+      try {
+        String sql = "select mem_name from member where mem_name = ? ";
+        con = dMgr.getConnection();
+        pstmt = con.prepareStatement(sql.toString());
+        pstmt.setString(1, mem_name);
+        rs = pstmt.executeQuery();
+        if(rs.next()){ 
+          value = 1;
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }finally{
+        dMgr.freeConnection(con, pstmt, rs);
+      }
+      return value;
+    }
+  
+  
+  public String nameChange(String mem_namec, String mem_name) {
+      String new_name = null; //변경된 닉네임을 받을 변수
+      StringBuilder sql = new StringBuilder();
+      sql.append( "UPDATE member " ); //기존 mem_name인 자리를 찾아서 새로운 mem_name으로 바꾸는 SQL문 *이 로직대로 되려면 모든 닉네임은 중복되면 안됨!!!!!!!
+      sql.append( "   SET mem_name =?   " );
+      sql.append( " WHERE mem_name =? " );
+      try {
+          con = dMgr.getConnection();
+          pstmt = con.prepareStatement(sql.toString());
+          pstmt.setString( 1, mem_namec );
+          pstmt.setString( 2, mem_name);
+          rs = pstmt.executeQuery();
+          if (rs.next()) {
+            new_name = rs.getString("mem_name");
+          } else {
+            new_name = "없음";
+          }
+          System.out.println("cDao.nameChange 실행결과"+new_name);
+      } catch (Exception e) {
+          e.printStackTrace();
+      } finally {
+          dMgr.freeConnection(con, pstmt, rs); //자원 반납
+      }
+      return new_name;
+  }
+  //닉네임 변경 /////////////////////////////////////////////////////////////////상준 변경내역
+
+  
 	//저장된 멤버리스트
  public List<MemberVO> listMembers(){
     List<MemberVO> memberlist = new ArrayList<MemberVO>();

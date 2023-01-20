@@ -55,45 +55,76 @@ public class TmtClientThread extends Thread {
             System.out.println("프로토콜200 / MESSAGE");
           }
           case Protocol.PROOM_IN: { // //1:1채팅창에 들어감
-            String nickName = st.nextToken();//tomato
-            String otherName = st.nextToken();//kiwi
-            String message = st.nextToken();//1:1
-            //1:1채팅창을 열어줌
-            TmtChatForm tcf = new TmtChatForm(tc);
-            tcf.initDisplay();
-            //DefaultTableModel - 2명
+            String nickName = st.nextToken();// tomato
+            String otherName = st.nextToken();// kiwi
+            String message = st.nextToken();// 1:1
+            // 1:1채팅창을 열어줌
+            TmtChatForm tmtChatForm = new TmtChatForm(tc);
+            tmtChatForm.initDisplay();
+            // DefaultTableModel - 2명
             tc.jta_display.append(nickName + "님과 " + otherName + "님이 대화를 시작했습니다. " + "\n");
             System.out.println("프로토콜210 / PROOM_IN");
-            
-            //tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
-            //tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+            // tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message +
+            // "\n");
+            // tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
           }
             break;
           case Protocol.PROOM_MSG: { // //1:1채팅
-            String nickName = st.nextToken();//tomato
-           // String otherName = st.nextToken();//kiwi
-            String message = st.nextToken();//1:1
-            //1:1채팅창을 열어줌
-            TmtChatForm tcf = new TmtChatForm(tc);
-            tcf.initDisplay();
-            //DefaultTableModel - 2명
-            tc.jta_display.append("[" + nickName + "] " + message + "\n");
-            tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+            String nickName = st.nextToken();// tomato
+            // String otherName = st.nextToken();//kiwi
+            String message = st.nextToken();// 1:1
+            // 1:1채팅창을 열어줌
+            // TmtChatForm tcf = new TmtChatForm(tc);
+            // tcf.initDisplay();
+            // DefaultTableModel - 2명
+            tmtChatForm.jta_display.append("[" + nickName + "] " + message + "\n");
+            tmtChatForm.jta_display.setCaretPosition(tmtChatForm.jta_display.getDocument().getLength());
             System.out.println("프로토콜220 / PROOM_MSG");
-            
-            //tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
-            //tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
-
+            // tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message +
+            // "\n");
+            // tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
           }
             break;
-          case Protocol.WHISPER: {
+          // case Protocol.WHISPER: {
+          //   String nickName = st.nextToken();
+          //   String otherName = st.nextToken();
+          //   String message = st.nextToken();
+          //   tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
+          //   tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+          // }
+          //   break;
+          case Protocol.CHANGE: {
             String nickName = st.nextToken();
-            String otherName = st.nextToken();
+            String afterName = st.nextToken();
             String message = st.nextToken();
-            tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message + "\n");
-            tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+            // 테이블에 대화명 변경하기
+            for (int i = 0; i < tc.dtm.getRowCount(); i++) {
+              String imsi = (String) tc.dtm.getValueAt(i, 0);
+              if (nickName.equals(imsi)) {
+                tc.dtm.setValueAt(afterName, i, 0);
+                
+              }break;
+
+            }
+            // 채팅창에 타이틀바에도 대화명을 변경처리 한다.
+            if (nickName.equals(tc.nickName)) {
+              tc.setTitle(afterName + "님의 대화창");
+              tc.nickName = afterName;
+            }
+            tc.jta_display.append(message + "\n");
           }
             break;
+          case Protocol.TALK_OUT: {
+            String nickName = st.nextToken();
+            tc.jta_display.append(nickName + "님이 퇴장 하였습니다.\n");
+            tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
+            for (int i = 0; i < tc.dtm.getRowCount(); i++) {
+              String n = (String) tc.dtm.getValueAt(i, 0);
+              if (n.equals(nickName)) {
+                tc.dtm.removeRow(i);
+              }
+            }
+          }
           default:
             System.out.println("해당하는 프로토콜이 존재하지 않습니다.");
         }

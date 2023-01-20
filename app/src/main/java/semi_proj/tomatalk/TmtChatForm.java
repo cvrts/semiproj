@@ -60,8 +60,8 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
 
   // 메인
   public static void main(String[] args) {
-    TmtChatForm tmtChatForm = new TmtChatForm();
-    tmtChatForm.initDisplay();
+    // TmtChatForm tmtChatForm = new TmtChatForm();
+    // tmtChatForm.initDisplay();
   }
 
   // 화면그리기

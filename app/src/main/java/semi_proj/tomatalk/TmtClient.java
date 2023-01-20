@@ -3,10 +3,7 @@ package semi_proj.tomatalk;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
-import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -70,7 +67,7 @@ public class TmtClient extends JFrame implements ActionListener {
 			// 서버측의 ip주소 작성하기
 			// client = new Socket("192.168.0.244",3000);
 			// new ServerSocket(3000)이 받아서 accept()통해서 client소켓에 저장됨.
-			client = new Socket("192.168.10.89", 2000);
+			client = new Socket("192.168.10.79", 2000);
 			oos = new ObjectOutputStream(client.getOutputStream());
 			ois = new ObjectInputStream(client.getInputStream());
 			// initDisplay에서 닉네임이 결정된 후 init메소드가 호출되므로
@@ -100,11 +97,11 @@ public class TmtClient extends JFrame implements ActionListener {
 				e2.printStackTrace();
 			}
 		} // end of 다자간 대화
-		else if (jbtn_one == obj) {
+		else if (jbtn_one == obj) { //1:1 대화버튼
 			// 상대를 선택
 			int row = jtb.getSelectedRow();
 			if (row == -1) {// -1=> end of file
-				JOptionPane.showMessageDialog(this, "귓속말 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "1:1대화 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			} else {
 				String name = (String) dtm.getValueAt(row, 0);
@@ -116,6 +113,11 @@ public class TmtClient extends JFrame implements ActionListener {
 				// String msg1 = JOptionPane.showInputDialog(name+"님에게 보낼 메시지를 입력");
 				TmtChatForm tcf = new TmtChatForm(this, name);
 				tcf.initDisplay();
+							try {
+				oos.writeObject(Protocol.PROOM_IN+Protocol.separator+nickName+Protocol.separator+name+Protocol.separator);
+				} catch (Exception e2) {
+				e2.printStackTrace();
+				}
 				// try {
 				// oos.writeObject(Protocol.WHISPER+Protocol.separator+nickName+Protocol.separator+name+Protocol.separator+msg1);
 				// } catch (Exception e2) {
@@ -127,8 +129,8 @@ public class TmtClient extends JFrame implements ActionListener {
 		} // end of 귓속말
 		else if (jbtn_change == obj) {
 			String afterName = JOptionPane.showInputDialog("변경할 대화명을 입력하세요.");
-			if (afterName == null || afterName.trim().length() < 1) {
-				JOptionPane.showMessageDialog(this, "변경할 대화명을 입력하세요", "INFO", JOptionPane.INFORMATION_MESSAGE);
+			if (afterName == null || afterName.trim().length() < 1 || afterName.equals(nickName)) //공백사용불가,같은대화명사용불가 
+				{JOptionPane.showMessageDialog(this, "변경할 대화명을 입력하세요", "INFO", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 			try {
@@ -161,6 +163,8 @@ public class TmtClient extends JFrame implements ActionListener {
 	// 화면그리기
 	public void initDisplay() {
 		jtf_msg.addActionListener(this);
+		jbtn_change.addActionListener(this);
+		jbtn_exit.addActionListener(this);
 		jbtn_one.addActionListener(this);
 		jbtn_send.addActionListener(this);
 		// 사용자의 닉네임 받기
