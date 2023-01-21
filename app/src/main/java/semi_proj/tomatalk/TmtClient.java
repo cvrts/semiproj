@@ -67,7 +67,7 @@ public class TmtClient extends JFrame implements ActionListener {
 			// 서버측의 ip주소 작성하기
 			// client = new Socket("192.168.0.244",3000);
 			// new ServerSocket(3000)이 받아서 accept()통해서 client소켓에 저장됨.
-			client = new Socket("192.168.10.79", 2000);
+			client = new Socket("localhost", 15000);
 			oos = new ObjectOutputStream(client.getOutputStream());
 			ois = new ObjectInputStream(client.getInputStream());
 			// initDisplay에서 닉네임이 결정된 후 init메소드가 호출되므로
@@ -105,7 +105,11 @@ public class TmtClient extends JFrame implements ActionListener {
 				return;
 			} else {
 				String name = (String) dtm.getValueAt(row, 0);
-				if (nickName.equals(name)) {
+//				if (nickName.equals(name)) {
+//					JOptionPane.showMessageDialog(this, "다른 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
+//					return;
+//				}
+				if (name.equals(nickName)) {
 					JOptionPane.showMessageDialog(this, "다른 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
@@ -155,9 +159,9 @@ public class TmtClient extends JFrame implements ActionListener {
 
 	// 메인
 	public static void main(String[] args) {
-		// TmtClient tc = new TmtClient();
-		// tc.initDisplay();
-		// tc.init();
+		 TmtClient tc = new TmtClient();
+		 tc.initDisplay();
+		 tc.init();
 	}
 
 	// 화면그리기
@@ -169,7 +173,7 @@ public class TmtClient extends JFrame implements ActionListener {
 		jbtn_send.addActionListener(this);
 		// 사용자의 닉네임 받기
 		// nickName = JOptionPane.showInputDialog("닉네임을 입력하세요.");
-		nickName = log.nickname;
+//		nickName = log.nickname;
 		this.setLayout(new GridLayout(1, 2));
 		jp_second.setLayout(new BorderLayout());
 		jp_second.add("Center", jsp);

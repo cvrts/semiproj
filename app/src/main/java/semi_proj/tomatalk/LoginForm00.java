@@ -27,7 +27,7 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	JButton jbtn_join = new JButton("JOIN US");
 	JoinJDialog joindia = new JoinJDialog(this);
 	ChatDao cDao = null;
-	String nickname = null;
+	String nickname = "";
 
 	// 생성자
 	LoginForm00() {

@@ -19,10 +19,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class TmtChatForm extends JFrame implements ActionListener, FocusListener {
-
+	
   Socket chatFormClient = null; // 1대1채팅 소켓
-  ObjectOutputStream oos = null;// 말 하고 싶을 때
-  ObjectInputStream ois = null;// 듣기 할 때
   String nickName = null;// 닉네임 등록
   String otherName = null;// 닉네임 등록
   // 선언부
@@ -60,8 +58,8 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
 
   // 메인
   public static void main(String[] args) {
-    // TmtChatForm tmtChatForm = new TmtChatForm();
-    // tmtChatForm.initDisplay();
+     TmtChatForm tmtChatForm = new TmtChatForm();
+     tmtChatForm.initDisplay();
   }
 
   // 화면그리기

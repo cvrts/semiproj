@@ -4,6 +4,8 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class TmtClientThread extends Thread {
+	
+//	private static final Logger
   TmtClient tc = null;
   TmtServerThread tst = null;
   TmtChatForm tmtChatForm = null;
@@ -71,7 +73,7 @@ public class TmtClientThread extends Thread {
             break;
           case Protocol.PROOM_MSG: { // //1:1채팅
             String nickName = st.nextToken();// tomato
-            // String otherName = st.nextToken();//kiwi
+            String otherName = st.nextToken();//kiwi
             String message = st.nextToken();// 1:1
             // 1:1채팅창을 열어줌
             // TmtChatForm tcf = new TmtChatForm(tc);
