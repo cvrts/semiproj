@@ -1,5 +1,9 @@
 package semi_proj.tomatalk;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.List;
 import java.util.Vector;
 
@@ -7,11 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.ServerSocket;
-import java.net.Socket;
 
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 //JFrame 상속, runnable implements ,ActionListener implements
 
 public class TmtChatServer extends JFrame implements Runnable, ActionListener {
@@ -78,7 +80,7 @@ public class TmtChatServer extends JFrame implements Runnable, ActionListener {
     try {
       // ServerSocket 객체생성 -> 포트번호 부여해야함!!
       serverSocket = new ServerSocket(15000);
-      System.out.println("서버소켓>>>" + serverSocket); // 서버소켓정보 확인하기 위해 출력
+      log.info("서버소켓>>>" + serverSocket); // 서버소켓정보 확인하기 위해 출력
       jta_log.append("server ready!");
       System.out.println("채팅서버 열리는중"); // 채팅서버 열리는지 확인하기 위해 출력
       // 서버가동 : 클라이언트가 접속할 때까지 기다림!(무한대기)
@@ -87,7 +89,7 @@ public class TmtChatServer extends JFrame implements Runnable, ActionListener {
         client = serverSocket.accept();// 접속한 클라이언트 socket을 serverSocket변수에 저장
         jta_log.append("서버에 접속한 클라이언트>>>" + client);// 서버에 접속한 클라이언트 jta_log에 붙이기
         jta_log.append("서버에 접속한 클라이언트 >>>" + client.getInetAddress() + "\n");// 서버에 접속한 클라이언트 주소
-        System.out.println("서버에 접속한 클라이언트>>>" + client);
+        log.info("서버에 접속한 클라이언트>>>" + client);
         tmtServerThread = new TmtServerThread(this);//////// ?//////////접속클라이언트와 서버로 st객체 생성
         // Thread 가동 ->run()-> broadCast()-> send()실시간 메소드 호출
         tmtServerThread.start();

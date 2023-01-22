@@ -3,6 +3,8 @@ package semi_proj.tomatalk;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 public class TmtClientThread extends Thread {
 	
 //	private static final Logger
@@ -10,7 +12,7 @@ public class TmtClientThread extends Thread {
   TmtServerThread tst = null;
   TmtChatForm tmtChatForm = null;
 
-  public TmtClientThread(TmtChatForm tmtChatForm) {
+  public TmtClientThread(TmtChatForm tmtChatForm) {//정보를 받아와야되는데못받아온다고 ㅡㅡㅡㅡㅜㅈㅈ
     this.tmtChatForm = tmtChatForm;
   }
 
@@ -29,7 +31,7 @@ public class TmtClientThread extends Thread {
         // 100#도마도 님 입장하였습니다.
         String msg = ""; // 메세지 변수
         msg = (String) tc.ois.readObject(); // 톡클라이언트가 말하는 것을 청취
-        System.out.println("서버에서 전송된 msg : " + msg);
+        log.info("서버에서 전송된 msg : " + msg);
         StringTokenizer st = null;
         int protocol = 0;// 프로토콜 받아올 변수 선언(ex:100 200 300 400 500)
         if (msg != null) { // 메세지를 받아올 때
@@ -57,6 +59,7 @@ public class TmtClientThread extends Thread {
             System.out.println("프로토콜200 / MESSAGE");
           }
           case Protocol.PROOM_IN: { // //1:1채팅창에 들어감
+        	  log.info(msg);
             String nickName = st.nextToken();// tomato
             String otherName = st.nextToken();// kiwi
             String message = st.nextToken();// 1:1
@@ -65,23 +68,26 @@ public class TmtClientThread extends Thread {
             tmtChatForm.initDisplay();
             // DefaultTableModel - 2명
             tc.jta_display.append(nickName + "님과 " + otherName + "님이 대화를 시작했습니다. " + "\n");
-            System.out.println("프로토콜210 / PROOM_IN");
             // tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message +
             // "\n");
             // tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());
           }
             break;
           case Protocol.PROOM_MSG: { // //1:1채팅
+        	  log.info(msg);
             String nickName = st.nextToken();// tomato
-            String otherName = st.nextToken();//kiwi
+            if (nickName == null) log.error("nickName is null");
             String message = st.nextToken();// 1:1
             // 1:1채팅창을 열어줌
-            // TmtChatForm tcf = new TmtChatForm(tc);
-            // tcf.initDisplay();
+//             TmtChatForm tcf = new TmtChatForm(tc);
+//             tcf.initDisplay();
             // DefaultTableModel - 2명
+            if (tmtChatForm == null) log.error("tmtChatForm is null");
+            if (tmtChatForm.jta_display == null) log.error("jta_display is null");
+
             tmtChatForm.jta_display.append("[" + nickName + "] " + message + "\n");
             tmtChatForm.jta_display.setCaretPosition(tmtChatForm.jta_display.getDocument().getLength());
-            System.out.println("프로토콜220 / PROOM_MSG");
+            log.info("프로토콜220 / PROOM_MSG");
             // tc.jta_display.append(nickName + "님이 " + otherName + "님에게 " + message +
             // "\n");
             // tc.jta_display.setCaretPosition(tc.jta_display.getDocument().getLength());

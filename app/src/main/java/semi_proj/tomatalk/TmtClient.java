@@ -89,9 +89,7 @@ public class TmtClient extends JFrame implements ActionListener {
 		String msg = jtf_msg.getText();
 		if (jtf_msg == obj || jbtn_send == obj) {// 엔터 전송버튼 둘다
 			try {
-				oos.writeObject(Protocol.MESSAGE
-						+ Protocol.separator + nickName
-						+ Protocol.separator + msg);
+				oos.writeObject(Protocol.MESSAGE + Protocol.separator + nickName + Protocol.separator + msg);
 				jtf_msg.setText("");
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -115,10 +113,10 @@ public class TmtClient extends JFrame implements ActionListener {
 				}
 				// 귓속말 입력받기
 				// String msg1 = JOptionPane.showInputDialog(name+"님에게 보낼 메시지를 입력");
-				TmtChatForm tcf = new TmtChatForm(this, name);
-				tcf.initDisplay();
+//				TmtChatForm tcf = new TmtChatForm(this, name);
+//				tcf.initDisplay();
 							try {
-				oos.writeObject(Protocol.PROOM_IN+Protocol.separator+nickName+Protocol.separator+name+Protocol.separator);
+				oos.writeObject(Protocol.PROOM_IN+Protocol.separator+nickName+Protocol.separator+name+Protocol.separator+"1:1대화 열렸다");
 				} catch (Exception e2) {
 				e2.printStackTrace();
 				}

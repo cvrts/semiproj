@@ -1,14 +1,13 @@
 package semi_proj.tomatalk;
 
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.swing.JButton;
@@ -17,6 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 
 public class TmtChatForm extends JFrame implements ActionListener, FocusListener {
 	
@@ -58,8 +61,8 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
 
   // 메인
   public static void main(String[] args) {
-     TmtChatForm tmtChatForm = new TmtChatForm();
-     tmtChatForm.initDisplay();
+//     TmtChatForm tmtChatForm = new TmtChatForm();
+//     tmtChatForm.initDisplay();
   }
 
   // 화면그리기
@@ -115,7 +118,8 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
       jta_display.append(msg1 + "\n");
       jtf_msg_guide.setText("");
       try {
-        tc.oos.writeObject(Protocol.PROOM_MSG + Protocol.separator + tc.nickName + Protocol.separator + this.otherName
+    	  log.info("client message : {}", msg1);
+        tc.oos.writeObject(Protocol.PROOM_MSG + Protocol.separator + tc.nickName +Protocol.separator+ this.otherName
             + Protocol.separator + msg1);
       } catch (Exception e2) {
         e2.printStackTrace();

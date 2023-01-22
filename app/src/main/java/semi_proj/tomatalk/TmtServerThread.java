@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 public class TmtServerThread extends Thread {
     TmtChatServer tmtChatServer = null;
     Socket client = null;
@@ -75,7 +77,7 @@ public class TmtServerThread extends Thread {
                 tmtChatServer.jta_log.setCaretPosition(tmtChatServer.jta_log.getDocument().getLength());
                 StringTokenizer st = null;
                 int protocol = 0;// 100|200|201|202|500
-                System.out.println(msg);
+               log.info(msg);
                 // JOptionPane.showMessageDialog(tmtChatServer, msg);
                 if (msg != null) {
                     st = new StringTokenizer(msg, "#");
@@ -95,7 +97,7 @@ public class TmtServerThread extends Thread {
                         String otherName = st.nextToken();// kiwi
                         String menu = st.nextToken();// 1대1 -> 프로토콜 210|tomato|kiwi|1대1
                         // 귓속말로 보내진 메시지
-                        String msg1 = st.nextToken();
+                       // String msg1 = st.nextToken();
                         for (TmtServerThread cst : tmtChatServer.globalList) {
                             if (otherName.equals(cst.talkName)) {// 상대에게 보내기
                                 cst.send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator
@@ -105,8 +107,8 @@ public class TmtServerThread extends Thread {
                             }
                         } // end of for
                           // 내가 한 말을 내게 보냄
-                        this.send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator + otherName
-                                + Protocol.separator + msg1);
+                      
+                        send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator +otherName+Protocol.separator+ menu);
                     }
                         break;
                     case Protocol.PROOM_MSG: { // 1:1대화
@@ -116,15 +118,13 @@ public class TmtServerThread extends Thread {
                         String msg2 = st.nextToken();
                         for (TmtServerThread cst : tmtChatServer.globalList) {
                             if (otherName.equals(cst.talkName)) {// 상대에게 보내기
-                                cst.send(Protocol.PROOM_MSG + Protocol.separator + talkName + Protocol.separator
-                                        + otherName
+                                cst.send(Protocol.PROOM_MSG + Protocol.separator + talkName 
                                         + Protocol.separator + msg2);
-                                break;
                             }
                         } // end of for
-                          // 내가 한 말을 내게 보냄
-                        this.send(Protocol.PROOM_MSG + Protocol.separator + talkName + Protocol.separator + otherName
-                                + Protocol.separator + msg2);
+//                           내가 한 말을 내게 보냄
+//                        send(Protocol.PROOM_MSG + Protocol.separator + talkName 
+//                                + Protocol.separator + msg2);
                     }
                         break;
 
@@ -172,7 +172,7 @@ public class TmtServerThread extends Thread {
                 }///////////// end of switch
             } ///////////////// end of while
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("server thread error :", e);
         }
     }
 }
