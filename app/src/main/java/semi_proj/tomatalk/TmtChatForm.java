@@ -94,7 +94,7 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
         this.add( jp );
         this.setSize( 400, 700 );
         this.setVisible( true );
-        this.setTitle( "tomatalk_chat_form" );
+        this.setTitle( nickName+"님과"+otherName+ "님의 채팅" );
         this.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
         jbtn_exit.requestFocus( true );// actionPerformed이벤트 걸리지 않은곳에 포커스를 맞춰줌
     }
@@ -120,7 +120,7 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
             if ( msg1 == null || msg1.length() == 0 ) {
                 return;
             }
-            jta_display.append( msg1 + "\n" );
+            //jta_display.append( msg1 + "\n" );
             jtf_msg_guide.setText( "" );
             
             // TmtClientThread tct = new TmtClientThread(this);

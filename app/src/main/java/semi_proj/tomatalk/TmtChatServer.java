@@ -79,7 +79,7 @@ public class TmtChatServer extends JFrame implements Runnable, ActionListener {
     // 접속이 안될수도 있으니까 예외처리
     try {
       // ServerSocket 객체생성 -> 포트번호 부여해야함!!
-      serverSocket = new ServerSocket(15000);
+      serverSocket = new ServerSocket(2000);
       log.info("서버소켓>>>" + serverSocket); // 서버소켓정보 확인하기 위해 출력
       jta_log.append("server ready!");
       System.out.println("채팅서버 열리는중"); // 채팅서버 열리는지 확인하기 위해 출력

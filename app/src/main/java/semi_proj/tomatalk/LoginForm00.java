@@ -4,6 +4,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -27,7 +28,7 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	JButton jbtn_join = new JButton("JOIN US");
 	JoinJDialog joindia = new JoinJDialog(this);
 	ChatDao cDao = null;
-	String nickname = "";
+	String nickname = null;
 
 	// 생성자
 	LoginForm00() {
@@ -44,7 +45,7 @@ public class LoginForm00 extends JFrame implements ActionListener {
 		// 화면그리기
 
 	public void initDisplay() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setContentPane(new MyPanel());
 		this.setLayout(null);
 		jlb_id.setBounds(45, 200, 80, 40);
@@ -79,16 +80,27 @@ public class LoginForm00 extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
+		cDao = new ChatDao();
+		int result = cDao.loginCheack(jtf_id.getText(), jpf_pw.getText());
 		if (obj == jbtn_join) { // 가입버튼 눌렀니?
-			// System.out.println("액션퍼폼드");
+			System.out.println("가입액션퍼폼드");
 			joindia.isClicked = true; // 버튼을 누르면 JoinDialog가 열림
 			joindia.initDisplay();
 		} else if (obj == jbtn_login) {
-			cDao = new ChatDao();
-			String user_id = jtf_id.getText();
-			String user_pw = jpf_pw.getText();
-			nickname = cDao.login(user_id, user_pw);
-			TmtClient tClient = new TmtClient(this);
+			if (jtf_id.getText().equals("") || jpf_pw.getText().equals("")) {
+				JOptionPane.showMessageDialog(null, "아이디와 비밀번호 모두 입력해주세요");
+			} else if (jtf_id.getText() != null && jpf_pw.getText() != null) {
+				if (result == 1) {
+					JOptionPane.showMessageDialog(null, "로그인 성공");
+					nickname = cDao.login(jtf_id.getText(), jpf_pw.getText());
+					TmtClient tClient = new TmtClient(this);
+					this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				} else if (result == -1) {
+					JOptionPane.showMessageDialog(null, "로그인 실패");
+				}
+			} else { // 로그인 실패
+				JOptionPane.showMessageDialog(null, "로그인 실패");
+			}
 		}
 		System.out.println("현재 적용된 닉네임" + nickname);
 	}// end of actionPerformed
