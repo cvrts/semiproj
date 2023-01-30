@@ -74,7 +74,10 @@ public class TmtClientThread extends Thread {
                         // 1:1채팅창을 열어줌
                         // TmtChatForm tmtChatForm = new TmtChatForm(tc);
                         // 지역변수이면 안된다. => 전역변수를 사용하지않고 지역변수를 사용했기 때문에 연결이되지 않고 계속 새롭게 화면 생성만함
-                        tmtChatForm = new TmtChatForm( tc ); // 이렇게 해주면 전역에 있는 tmtChatForm 사용하니까 서로 연결됨
+                       // tmtChatForm = new TmtChatForm( tc ); // 이렇게 해주면 전역에 있는 tmtChatForm 사용하니까 서로 연결됨
+                        // 2023.01.30 수정 부분
+                        // 서버창 띄울때 otherName을 가지고 갈 수 있도록 수정
+                        tmtChatForm = new TmtChatForm(tc, otherName); // 이렇게 해주면 전역에 있는 tmtChatForm 사용하니까 서로 연결됨
                         tmtChatForm.initDisplay();
                         tmtChatForm.jta_display.append( nickName + "님이 입장하였습니다." + "\n" );
                         tmtChatForm.jta_display.append( otherName + "님이 입장하였습니다." + "\n" );
@@ -89,15 +92,15 @@ public class TmtClientThread extends Thread {
                     case Protocol.PROOM_MSG: { // //1:1채팅
                         log.info( msg );
                         String nickName = st.nextToken();// tomato
-                        if ( nickName == null )
-                            log.error( "nickName is null" );
+                        // if ( nickName == null )
+                        //     log.error( "nickName is null" );
                         String message = st.nextToken();// 1:1
                         // 1:1채팅창을 열어줌
                         // TmtChatForm tcf = new TmtChatForm(tc);
                         // tcf.initDisplay();
                         // DefaultTableModel - 2명
-                        if ( tmtChatForm == null )
-                            log.error( "tmtChatForm is null" );
+                        // if ( tmtChatForm == null )
+                        //     log.error( "tmtChatForm is null" );
                         tmtChatForm.jta_display.append( "[" + nickName + "] " + message + "\n" );
                         tmtChatForm.jta_display.setCaretPosition( tmtChatForm.jta_display.getDocument().getLength() );
                         log.info( "프로토콜220 / PROOM_MSG" );

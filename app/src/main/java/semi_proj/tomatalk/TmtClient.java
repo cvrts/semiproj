@@ -95,7 +95,7 @@ public class TmtClient extends JFrame implements ActionListener {
 				e2.printStackTrace();
 			}
 		} // end of 다자간 대화
-		else if (jbtn_one == obj) { //1:1 대화버튼
+		else if (jbtn_one == obj) { // 1:1 대화버튼
 			// 상대를 선택
 			int row = jtb.getSelectedRow();
 			if (row == -1) {// -1=> end of file
@@ -103,22 +103,24 @@ public class TmtClient extends JFrame implements ActionListener {
 				return;
 			} else {
 				String name = (String) dtm.getValueAt(row, 0);
-//				if (nickName.equals(name)) {
-//					JOptionPane.showMessageDialog(this, "다른 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
-//					return;
-//				}
+				// if (nickName.equals(name)) {
+				// JOptionPane.showMessageDialog(this, "다른 상대를 선택하세요.", "info",
+				// JOptionPane.INFORMATION_MESSAGE);
+				// return;
+				// }
 				if (name.equals(nickName)) {
 					JOptionPane.showMessageDialog(this, "다른 상대를 선택하세요.", "info", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
 				// 귓속말 입력받기
 				// String msg1 = JOptionPane.showInputDialog(name+"님에게 보낼 메시지를 입력");
-//				TmtChatForm tcf = new TmtChatForm(this, name);
-//				tcf.initDisplay();
-							try {
-				oos.writeObject(Protocol.PROOM_IN+Protocol.separator+nickName+Protocol.separator+name+Protocol.separator+"1:1대화 열렸다");
+				// TmtChatForm tcf = new TmtChatForm(this, name);
+				// tcf.initDisplay();
+				try {
+					oos.writeObject(Protocol.PROOM_IN + Protocol.separator + nickName + Protocol.separator + name
+							+ Protocol.separator + "1:1대화 열렸다");
 				} catch (Exception e2) {
-				e2.printStackTrace();
+					e2.printStackTrace();
 				}
 				// try {
 				// oos.writeObject(Protocol.WHISPER+Protocol.separator+nickName+Protocol.separator+name+Protocol.separator+msg1);
@@ -131,8 +133,9 @@ public class TmtClient extends JFrame implements ActionListener {
 		} // end of 귓속말
 		else if (jbtn_change == obj) {
 			String afterName = JOptionPane.showInputDialog("변경할 대화명을 입력하세요.");
-			if (afterName == null || afterName.trim().length() < 1 || afterName.equals(nickName)) //공백사용불가,같은대화명사용불가 
-				{JOptionPane.showMessageDialog(this, "변경할 대화명을 입력하세요", "INFO", JOptionPane.INFORMATION_MESSAGE);
+			if (afterName == null || afterName.trim().length() < 1 || afterName.equals(nickName)) // 공백사용불가,같은대화명사용불가
+			{
+				JOptionPane.showMessageDialog(this, "변경할 대화명을 입력하세요", "INFO", JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 			try {
@@ -156,10 +159,10 @@ public class TmtClient extends JFrame implements ActionListener {
 	}
 
 	// 메인
-public static void main(String[] args) {
-//		 TmtClient tc = new TmtClient();
-//		 tc.initDisplay();
-//		 tc.init();
+	public static void main(String[] args) {
+		// TmtClient tc = new TmtClient();
+		// tc.initDisplay();
+		// tc.init();
 	}
 
 	// 화면그리기

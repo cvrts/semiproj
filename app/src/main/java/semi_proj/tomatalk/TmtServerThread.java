@@ -98,12 +98,20 @@ public class TmtServerThread extends Thread {
                         String menu = st.nextToken();// 1대1 -> 프로토콜 210|tomato|kiwi|1대1
                         // 귓속말로 보내진 메시지
                        // String msg1 = st.nextToken();
+
+                        // 2023.01.30 수정 부분
+                        // 중간 Protocol.separator에서 상대에게 보낸메세지와 나에게 보낸 메세지가
+                        // 동일한 메세지로 받아 상대와 나가 이름이 같게되어 문제
+                        // 메세지 보낼때 상대에게는 내이름 나에겐 상대이름이 되게 해야해서 otherName, talkName 수정
                         for (TmtServerThread cst : tmtChatServer.globalList) {
                             if (otherName.equals(cst.talkName)) {// 상대에게 보내기
-                                cst.send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator
-                                        + otherName
-                                        + Protocol.separator + menu);
-                                break;
+                                cst.send(Protocol.PROOM_IN + Protocol.separator + otherName + Protocol.separator
+                                + talkName
+                                + Protocol.separator + menu);
+                                // cst.send(Protocol.PROOM_IN + Protocol.separator + talkName + Protocol.separator
+                                //         + otherName
+                                //         + Protocol.separator + menu);
+                                // break;
                             }
                         } // end of for
                           // 내가 한 말을 내게 보냄
@@ -117,7 +125,9 @@ public class TmtServerThread extends Thread {
                         // 1:1대화로 보내진 메시지 - TmtChatForm의 actionPerformed에서 날아온 메세지
                         String msg2 = st.nextToken();
                         for (TmtServerThread cst : tmtChatServer.globalList) {
-                            if (otherName.equals(cst.talkName)) {// 상대에게 보내기
+                             // 2023.01.30 수정 부분
+                            // talkName.equals(cst.talkName) 추가
+                            if (otherName.equals(cst.talkName)|| talkName.equals(cst.talkName)) {// 상대에게 보내기
                                 cst.send(Protocol.PROOM_MSG + Protocol.separator + talkName 
                                         + Protocol.separator + msg2);
                             }

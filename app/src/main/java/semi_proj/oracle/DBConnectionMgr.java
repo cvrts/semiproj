@@ -12,7 +12,7 @@ public class DBConnectionMgr {
   // 물리적으로 떨어져 있는 오라클 서버에 URL정보 추가
   // 물리적으로 떨어져 있는 오라클 서버에 접속하는 방식으로 thin방식과 oci방식지원
   // 멀티티어 환경에서는 thin 방식이다 서버의 DNS, 포트번호-1521, SID이름-물리적인 저장소참조
-  public static final String _URL = "jdbc:oracle:thin:@localhost:1521:orcl11";
+  public static final String _URL = "jdbc:oracle:thin:@192.168.10.89:1521:orcl11";
   public static String _USER = "DAKOO";
   public static String _PW = "dakoo2";
 

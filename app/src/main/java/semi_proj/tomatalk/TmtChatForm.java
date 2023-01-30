@@ -53,11 +53,19 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
     public TmtChatForm() {
         initDisplay();
     }
-    
-    public TmtChatForm( TmtClient tmtClient, String name ) {
-        this( tmtClient );
+       // 2023.01.30 수정 부분
+    // otherName을 name으로 받아오도록 설정
+
+    public TmtChatForm(TmtClient tmtClient, String name) {
+        // this(tmtClient);
+        this.tc = tmtClient;
         this.otherName = name;
     }
+    
+    // public TmtChatForm( TmtClient tmtClient, String name ) {
+    //     this( tmtClient );
+    //     this.otherName = name;
+    // }
     
     // 메인
     public static void main( String[] args ) {
@@ -94,7 +102,10 @@ public class TmtChatForm extends JFrame implements ActionListener, FocusListener
         this.add( jp );
         this.setSize( 400, 700 );
         this.setVisible( true );
-        this.setTitle( nickName+"님과"+otherName+ "님의 채팅" );
+                // 2023.01.30 수정 부분
+        // tc.nickName으로 수정 -> 이전에 nickName으로 받아와 초기화가 되지않아 null로 출력
+        this.setTitle(tc.nickName + "님과" + otherName + "님의 채팅");
+        // this.setTitle( nickName+"님과"+otherName+ "님의 채팅" );
         this.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
         jbtn_exit.requestFocus( true );// actionPerformed이벤트 걸리지 않은곳에 포커스를 맞춰줌
     }
