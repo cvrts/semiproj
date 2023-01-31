@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="mysqlFile">mysql</Property>
+		<Property name="mybatisFile">mybatis</Property>
+	</Properties>
+	<Appenders>
+		<Console name="consoleAppender" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %c %-5p [ %l ] %m%n"
+				disableAnsi="false" />
+		</Console>
+		<RollingFile name="rollingFileAppender"
+			fileName="src/logs/${mysqlFile}.log"
+			filePattern="src/logs/%d{yyyy-MM-dd HHmmss}-%i-${mysqlFile}.log"
+			append="false" createOnDemand="true">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %c %-5p [ %l ] %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="5 MB" />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="mybatisAppender"
+			fileName="src/logs/${mybatisFile}.log"
+			filePattern="src/logs/%d{yyyy-MM-dd}-%i-${mybatisFile}.log"
+			append="false" createOnDemand="true">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %c %-5p [ %l ] %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="1 MB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="INFO">
+			<AppenderRef ref="consoleAppender" />
+		</Root>
+		<Logger name="logger" level="DEBUG" additivity="false">
+			<AppenderRef ref="consoleAppender" />
+		</Logger>
+		<Logger name="mysql" level="DEBUG" additivity="false">
+			<AppenderRef ref="consoleAppender" />
+			<AppenderRef ref="rollingFileAppender" />
+		</Logger>
+		<Logger name="mybatis.sakila" level="TRACE" additivity="false">
+			<AppenderRef ref="consoleAppender" />
+			<AppenderRef ref="mybatisAppender" />
+		</Logger>
+	</Loggers>
+</Configuration>
